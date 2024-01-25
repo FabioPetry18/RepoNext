@@ -1,113 +1,105 @@
+"use client"
 import Image from "next/image";
+import confetti from 'canvas-confetti';
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const segundaEtapaRef = useRef<HTMLDivElement | null>(null);
+  const [ativarAnimacao, setAtivarAnimacao] = useState(false);
+
+
+  let duration = 5 * 1000;
+let animationEnd = Date.now() + duration;
+let defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+function randomInRange(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+function confete(){
+  let interval : any = setInterval(function() {
+    let timeLeft = animationEnd - Date.now();
+  
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+  
+    let particleCount = 50 * (timeLeft / duration);
+    // since particles fall down, start a bit higher than random
+    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+  }, 250);
+  
+}
+
+
+const scrollParaSegundaEtapa = () => {
+  console.log("teste")
+  if (segundaEtapaRef.current) {
+    segundaEtapaRef.current.scrollIntoView({ behavior: 'smooth' });
+    confete();
+  }
+};
+useEffect(() => {
+  const handleScroll = () => {
+    if (segundaEtapaRef.current) {
+      const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.01, // Quando 50% ou mais do elemento estiver visível
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          // O elemento está visível na tela, ative a animação
+          setAtivarAnimacao(true);
+        } else {
+          // O elemento não está visível na tela, desative a animação
+          setAtivarAnimacao(false);
+        }
+      }, options);
+
+      observer.observe(segundaEtapaRef.current);
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+}, []);
+
+const classeBase = " max-w-screen-sm w-screen h-screen max-w-full h-screen max-w-sm p-4 bg-white  flex items-center justify-center";
+
+// Classe de animação que pode ser adicionada ou removida com base no estado ativarAnimacao
+const classeAnimacao = ativarAnimacao
+  ? "animate-fade-down animate-once animate-duration-[2000ms] animate-delay-300"
+  : "";
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get ssstarted by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
+    <>
+    <div className="w-screen h-screen max-w-full bg-yellow-500 flex justify-center items-center">
+      <div className="max-w-screen-sm mx-16 text-center">
+      <p className="animate-wiggle-more animate-infinite text-white font-semibold text-6xl mb-5">
+          Luana
         </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+        <h1 className="text-white font-semibold text-2xl">De acordo com o conselho dos adoradores de melões 🍈, a partir de agora além de você ser uma adoradora de melão, você é uma... </h1>
+        
+      <div onClick={() => {scrollParaSegundaEtapa()}} className={`z-10 flex-none max-w-full  bg-yellow-600 w-20 h-20 rounded-full absolute top-0/2 bottom-1  left-1/2 xsm:left-[170px]  transform -translate-x-1/2 -translate-y-1/2 animate-bounce cursor-pointer`}>
+        <svg onClick={() => {scrollParaSegundaEtapa()}} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ' width="20" height="14" viewBox="0 0 20 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fillRule="evenodd" clipRule="evenodd" d="M0.592285 0.114337C0.218185 0.269955 -0.0699531 0.920173 0.0149447 1.41728C0.0533571 1.64266 1.4787 3.5497 4.83664 7.86854L9.60369 14H9.99908H10.3945L15.1645 7.86466C18.9478 2.99882 19.9455 1.65522 19.987 1.3707C20.0978 0.610421 19.4787 -0.149975 18.8918 0.0255098C18.7272 0.0747186 17.2488 1.89464 14.3234 5.64947L9.99819 11.2007L5.718 5.69297C2.75509 1.88026 1.35503 0.154641 1.16865 0.0859084C0.998588 0.023113 0.786299 0.0336161 0.592285 0.114337Z" fill="currentColor"/>
+        </svg>
+      </div>       
+    </div>
+  </div>
+  <div ref={segundaEtapaRef} className='w-screen h-screen max-w-full  flex items-center justify-center'>
+    {ativarAnimacao &&(      
+        <div  className={`${classeBase} ${classeAnimacao}`}>
+            <h1 className="font-extrabold text-7xl bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent">PESSOA <span className="underline">LEGAL!</span></h1>
+        </div>     
+      )}
+  </div>
+  </>
+);
 }
