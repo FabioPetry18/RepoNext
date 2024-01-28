@@ -79,7 +79,7 @@ const classeAnimacao = ativarAnimacao
 
   return (
     <>
-    <div className="w-screen h-screen max-w-full bg-yellow-500 flex justify-center items-center">
+    <div className="w-screen h-screen max-w-full bg-pink-500 xsm:bg-purple-500 flex justify-center items-center">
       <div className="max-w-screen-sm mx-16 text-center">
       <p className="animate-wiggle-more animate-infinite text-white font-semibold text-6xl mb-5">
           Luana
